@@ -1,3 +1,35 @@
+How to use this Repo: 
+
+- Create a new project or use an existing one on console.cloud.google.com
+- Billing needs to be enabled for the project 
+  - Check here : https://console.cloud.google.com/billing/linkedaccount?project=gdgessex
+- Enable Gemini AI Platform 
+  - https://console.cloud.google.com/apis/library/aiplatform.googleapis.com?project=<projectid>
+-Go to https://colab.research.google.com/ , click Upload Notebook and choose GitHub in the side menu. 
+    - Enter dgituser12 in the search box. 
+    - Choode ProdReadyDataAgentsGDG from the dropdown 
+    - Three .ipynb files will be shown. Choose the ipynb file you want to open.
+- When opened, in the first cell :
+  - For the REPOSITORY_URL enter https://github.com/dgituser12/ProdReadyDataAgentsGDG.git
+  - branch is main
+  - In the PARTICIPANT_CONFIG
+    - The first project_id (under google_cloud tag) is your project_id
+    - The dataset_id is the name for the dataset in your project. Can be anything valid
+    - The second project_id and dataset_id has to be gdgessex and essex_workshop respectively
+    - No need to change others
+  - Start execurting one cell at a time. 
+    - One of the cells, will ask you to authenticate to use your Google credentials for colab and gcp project. 
+      - One of the steps will be to choose "select all" - one of which is Google Drive access. If you skip this, authentication will fail.
+    
+It is possible to open any notebook and run the cells. No need to run 01, 02 and 03 in order.
+
+If the repo is already cloned in the colab environment, cloning will not be done. 
+    If you want to re-clone, just open a new window. 
+
+Tables and views do not change in the course of thw workshop. So, if dataset and tables already exist, they wont be reloaded.
+
+
+
 # Enterprise Data Agents on Google Cloud — GDG Essex
 
 **Workshop:** From Data to Action: Building Enterprise Data Agents with Google Cloud  
