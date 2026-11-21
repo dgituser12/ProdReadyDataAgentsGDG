@@ -1,0 +1,13 @@
+{
+  "synthetic_data": true,
+  "seed": 20261013,
+  "snapshot_date": "2026-10-01",
+  "currency": "GBP",
+  "warehouse_id": "WH-ESSEX-01",
+  "row_counts": {
+    "suppliers": 8,
+    "products": 60,
+    "inventory_snapshot": 60,
+    "fulfillment_orders": 500
+  }
+}

@@ -1,0 +1,381 @@
+{
+  "catalogue_name": "GDG Essex Supply Chain Semantic Catalogue",
+  "version": "1.0.0",
+  "status": "workshop_reference",
+  "description": "Canonical business definitions for the synthetic Essex supply-chain scenario. These definitions are the shared contract for SQL, agent tools, skills and evaluation cases.",
+  "as_of_date_source": "inventory_snapshot.snapshot_date",
+  "currency": "GBP",
+  "warehouse_scope": "Single warehouse per snapshot; WH-ESSEX-01 in the supplied dataset.",
+  "entities": {
+    "supplier": {
+      "table": "suppliers",
+      "primary_key": "supplier_id",
+      "grain": "one row per supplier",
+      "joins": [
+        "products.supplier_id = suppliers.supplier_id",
+        "fulfillment_orders.supplier_id = suppliers.supplier_id"
+      ]
+    },
+    "product": {
+      "table": "products",
+      "primary_key": "product_id",
+      "grain": "one row per product",
+      "joins": [
+        "inventory_snapshot.product_id = products.product_id",
+        "fulfillment_orders.product_id = products.product_id"
+      ]
+    },
+    "inventory_snapshot": {
+      "table": "inventory_snapshot",
+      "primary_key": "snapshot_id",
+      "grain": "one row per product per warehouse per snapshot",
+      "joins": [
+        "product_id to products",
+        "warehouse_id identifies inventory geography"
+      ]
+    },
+    "fulfillment_order": {
+      "table": "fulfillment_orders",
+      "primary_key": "order_id",
+      "grain": "one row per fulfilment order",
+      "joins": [
+        "supplier_id to suppliers",
+        "product_id to products"
+      ]
+    }
+  },
+  "metrics": [
+    {
+      "id": "inventory.available_stock_units",
+      "name": "Available stock units",
+      "domain": "inventory",
+      "entity_grain": "warehouse + snapshot",
+      "type": "sum",
+      "unit": "units",
+      "formula": "SUM(inventory_snapshot.available_quantity)",
+      "filters": [],
+      "interpretation": "Units currently available after reservations.",
+      "caveats": [
+        "Use one snapshot date and warehouse scope; do not sum across snapshots."
+      ]
+    },
+    {
+      "id": "inventory.products_below_safety_stock",
+      "name": "Products below safety stock",
+      "domain": "inventory",
+      "entity_grain": "product + warehouse + snapshot",
+      "type": "count_distinct",
+      "unit": "products",
+      "formula": "COUNT(DISTINCT product_id) WHERE available_quantity < safety_stock",
+      "filters": [],
+      "interpretation": "Products with available stock below their defined safety stock.",
+      "caveats": [
+        "Includes both AT_RISK and CRITICAL products."
+      ]
+    },
+    {
+      "id": "inventory.critical_products",
+      "name": "Critical inventory products",
+      "domain": "inventory",
+      "entity_grain": "product + warehouse + snapshot",
+      "type": "count_distinct",
+      "unit": "products",
+      "formula": "COUNT(DISTINCT product_id) WHERE inventory_status = 'CRITICAL'",
+      "filters": [],
+      "interpretation": "Products with available stock below 50% of safety stock.",
+      "caveats": [
+        "Uses the status classification captured in the snapshot."
+      ]
+    },
+    {
+      "id": "inventory.stockout_products",
+      "name": "Stockout products",
+      "domain": "inventory",
+      "entity_grain": "product + warehouse + snapshot",
+      "type": "count_distinct",
+      "unit": "products",
+      "formula": "COUNT(DISTINCT product_id) WHERE available_quantity = 0",
+      "filters": [],
+      "interpretation": "Products with no available units.",
+      "caveats": [
+        "A stockout is not inferred from on-hand quantity alone; reservations are deducted."
+      ]
+    },
+    {
+      "id": "inventory.shortage_units",
+      "name": "Shortage units",
+      "domain": "inventory",
+      "entity_grain": "product + warehouse + snapshot",
+      "type": "derived_sum",
+      "unit": "units",
+      "formula": "SUM(GREATEST(safety_stock - available_quantity, 0))",
+      "filters": [],
+      "interpretation": "Units required to bring each product up to safety stock.",
+      "caveats": [
+        "Shortages are floored at zero per product before summing."
+      ]
+    },
+    {
+      "id": "inventory.value_at_risk_gbp",
+      "name": "Inventory value at risk",
+      "domain": "inventory",
+      "entity_grain": "product + warehouse + snapshot",
+      "type": "derived_sum",
+      "unit": "GBP",
+      "formula": "SUM(GREATEST(safety_stock - available_quantity, 0) * products.unit_cost_gbp)",
+      "filters": [],
+      "interpretation": "Estimated purchase-cost value of the safety-stock shortfall.",
+      "caveats": [
+        "This is a replenishment exposure proxy, not lost revenue or a financial provision.",
+        "Join product unit cost; currency is GBP."
+      ]
+    },
+    {
+      "id": "supplier.profile_risk_tier",
+      "name": "Supplier profile risk tier",
+      "domain": "supplier",
+      "entity_grain": "supplier",
+      "type": "attribute",
+      "unit": "LOW|MEDIUM|HIGH",
+      "formula": "suppliers.supplier_risk_tier",
+      "filters": [],
+      "interpretation": "Static supplier profile classification.",
+      "caveats": [
+        "Do not present this as a score calculated from observed delivery performance."
+      ]
+    },
+    {
+      "id": "supplier.on_time_delivery_rate",
+      "name": "Supplier on-time delivery rate",
+      "domain": "supplier_performance",
+      "entity_grain": "supplier + observation period",
+      "type": "ratio",
+      "unit": "fraction",
+      "formula": "COUNT(delivered orders where actual_delivery_date <= promised_delivery_date) / COUNT(delivered orders with actual_delivery_date)",
+      "filters": [
+        "order_status = 'DELIVERED'",
+        "actual_delivery_date IS NOT NULL"
+      ],
+      "interpretation": "Share of delivered orders that arrived on or before the promised date.",
+      "caveats": [
+        "Exclude open and cancelled orders from numerator and denominator.",
+        "Return null when there are no delivered orders; never silently return zero.",
+        "This is observed performance, separate from supplier_risk_tier."
+      ]
+    },
+    {
+      "id": "supplier.late_deliveries",
+      "name": "Late delivered orders",
+      "domain": "supplier_performance",
+      "entity_grain": "supplier + observation period",
+      "type": "count",
+      "unit": "orders",
+      "formula": "COUNT(delivered orders where actual_delivery_date > promised_delivery_date)",
+      "filters": [
+        "order_status = 'DELIVERED'",
+        "actual_delivery_date IS NOT NULL"
+      ],
+      "interpretation": "Delivered orders that arrived after their promised date.",
+      "caveats": [
+        "Does not count currently overdue open orders; those belong to fulfilment exposure."
+      ]
+    },
+    {
+      "id": "supplier.average_late_days",
+      "name": "Average late days",
+      "domain": "supplier_performance",
+      "entity_grain": "supplier + observation period",
+      "type": "average",
+      "unit": "days",
+      "formula": "AVG(DATE_DIFF(actual_delivery_date, promised_delivery_date, DAY)) over late delivered orders only",
+      "filters": [
+        "order_status = 'DELIVERED'",
+        "actual_delivery_date > promised_delivery_date"
+      ],
+      "interpretation": "Average delay among late delivered orders only.",
+      "caveats": [
+        "Exclude on-time deliveries and open overdue orders.",
+        "Return null when no late delivered orders exist."
+      ]
+    },
+    {
+      "id": "fulfillment.total_orders",
+      "name": "Total fulfilment orders",
+      "domain": "fulfillment",
+      "entity_grain": "observation period",
+      "type": "count",
+      "unit": "orders",
+      "formula": "COUNT(order_id)",
+      "filters": [],
+      "interpretation": "All orders in the selected order dataset/period.",
+      "caveats": [
+        "Apply an explicit order-date range when reporting a period."
+      ]
+    },
+    {
+      "id": "fulfillment.open_orders",
+      "name": "Open orders",
+      "domain": "fulfillment",
+      "entity_grain": "as-of date",
+      "type": "count",
+      "unit": "orders",
+      "formula": "COUNT(order_id) WHERE order_status IN ('PROCESSING','IN_TRANSIT','DELAYED')",
+      "filters": [],
+      "interpretation": "Orders not yet delivered or cancelled.",
+      "caveats": [
+        "Status is evaluated as at the dataset snapshot date."
+      ]
+    },
+    {
+      "id": "fulfillment.overdue_open_orders",
+      "name": "Overdue open orders",
+      "domain": "fulfillment",
+      "entity_grain": "as-of date",
+      "type": "count",
+      "unit": "orders",
+      "formula": "COUNT(order_id) WHERE order_status IN ('PROCESSING','IN_TRANSIT','DELAYED') AND promised_delivery_date < as_of_date",
+      "filters": [],
+      "interpretation": "Open orders whose promised date has passed as at the snapshot date.",
+      "caveats": [
+        "Do not include late delivered orders; they are a separate historical performance measure."
+      ]
+    },
+    {
+      "id": "fulfillment.current_overdue_days",
+      "name": "Current overdue days",
+      "domain": "fulfillment",
+      "entity_grain": "order + as-of date",
+      "type": "derived",
+      "unit": "days",
+      "formula": "DATE_DIFF(as_of_date, promised_delivery_date, DAY) for overdue open orders",
+      "filters": [
+        "order is open",
+        "promised_delivery_date < as_of_date"
+      ],
+      "interpretation": "Age of each currently overdue open order, measured at the snapshot date.",
+      "caveats": [
+        "The portfolio total is the sum across overdue open orders; use order-level values for prioritisation."
+      ]
+    },
+    {
+      "id": "fulfillment.delayed_open_order_value_gbp",
+      "name": "Delayed open-order value",
+      "domain": "fulfillment",
+      "entity_grain": "as-of date",
+      "type": "sum",
+      "unit": "GBP",
+      "formula": "SUM(order_value_gbp) WHERE order is open AND promised_delivery_date < as_of_date",
+      "filters": [
+        "order_status IN ('PROCESSING','IN_TRANSIT','DELAYED')",
+        "promised_delivery_date < as_of_date"
+      ],
+      "interpretation": "Order value associated with currently overdue open orders.",
+      "caveats": [
+        "Exposure indicator, not recognised revenue loss.",
+        "Currency is GBP."
+      ]
+    },
+    {
+      "id": "supplier.inventory_exposure_gbp",
+      "name": "Supplier-linked inventory value at risk",
+      "domain": "cross_domain",
+      "entity_grain": "supplier + warehouse + snapshot",
+      "type": "derived_sum",
+      "unit": "GBP",
+      "formula": "SUM(inventory value at risk for products supplied by each supplier)",
+      "filters": [],
+      "interpretation": "Estimated replenishment exposure attributable to products supplied by each supplier.",
+      "caveats": [
+        "This is a supplier attribution of inventory exposure, not proof that the supplier caused the shortage.",
+        "Each product is attributed to its primary supplier in the products table.",
+        "GBP is the currency."
+      ]
+    },
+    {
+      "id": "supplier.products_below_safety_stock",
+      "name": "Supplier products below safety stock",
+      "domain": "cross_domain",
+      "entity_grain": "supplier + warehouse + snapshot",
+      "type": "count_distinct",
+      "unit": "products",
+      "formula": "COUNT(DISTINCT product_id) where available_quantity < safety_stock, grouped by primary supplier",
+      "filters": [],
+      "interpretation": "Number of supplied products below their safety-stock threshold.",
+      "caveats": [
+        "Each product is attributed to its primary supplier.",
+        "Do not interpret association as supplier causation."
+      ]
+    },
+    {
+      "id": "supplier.overdue_open_order_value_gbp",
+      "name": "Overdue open-order value by supplier",
+      "domain": "cross_domain",
+      "entity_grain": "supplier + as-of date",
+      "type": "sum",
+      "unit": "GBP",
+      "formula": "SUM(order_value_gbp) for open orders whose promised date is before the as-of date, grouped by supplier",
+      "filters": [
+        "open order",
+        "promised_delivery_date < as_of_date"
+      ],
+      "interpretation": "Value of currently overdue open orders associated with each supplier.",
+      "caveats": [
+        "Exposure indicator, not recognised revenue loss.",
+        "Does not establish supplier fault.",
+        "GBP is the currency."
+      ]
+    }
+  ],
+  "dimensions": [
+    "snapshot_date",
+    "warehouse_id",
+    "product_id",
+    "product_category",
+    "product_criticality",
+    "supplier_id",
+    "supplier_country",
+    "supplier_risk_tier",
+    "order_date",
+    "promised_delivery_date",
+    "actual_delivery_date",
+    "order_status"
+  ],
+  "status_rules": {
+    "inventory_status": {
+      "CRITICAL": "available_quantity < 0.5 * safety_stock",
+      "AT_RISK": "0.5 * safety_stock <= available_quantity < safety_stock",
+      "HEALTHY": "available_quantity >= safety_stock"
+    },
+    "order_status": {
+      "DELIVERED": "actual_delivery_date is present and on/before snapshot date",
+      "DELAYED": "open order and promised_delivery_date is before snapshot date",
+      "PROCESSING": "open order not overdue and in processing",
+      "IN_TRANSIT": "open order not overdue and in transit",
+      "CANCELLED": "cancelled order"
+    }
+  },
+  "agent_usage": {
+    "answering_policy": [
+      "Resolve relative time to the dataset snapshot_date unless the user explicitly asks for a different order-date reporting period.",
+      "State the as-of date, warehouse scope and currency for relevant answers.",
+      "Distinguish supplier profile risk tier from observed delivery performance.",
+      "Distinguish late delivered orders from overdue open orders.",
+      "Use null/unknown when a denominator is zero or data is missing; do not fabricate a value.",
+      "For rankings, state the metric and sort direction; include denominator for rates.",
+      "When attributing inventory or overdue-order exposure to a supplier, describe it as association/attribution, not proof of supplier causation.",
+      "For cross-domain supplier risk, aggregate inventory and fulfilment independently to supplier grain before joining; never join raw inventory rows directly to raw order rows without controlling fan-out."
+    ],
+    "safe_default_limits": {
+      "max_rows": 100,
+      "max_group_by_dimensions": 2,
+      "require_aggregation_for_unbounded_lists": true,
+      "read_only": true
+    },
+    "clarification_triggers": [
+      "User asks for current stock but no snapshot exists.",
+      "User asks for a trend but only one snapshot is available.",
+      "User asks for a financial loss amount rather than the defined exposure proxy.",
+      "User asks to compare warehouses although this dataset contains one warehouse."
+    ]
+  }
+}

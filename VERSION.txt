@@ -1,0 +1,3 @@
+Workshop package: Building Production-Grade Data Agents on GCP
+ADK target: google-adk==2.15.0 (participant-validated in Colab)
+Decision 1: illustrative only; disabled; no Decision 1 SDK dependency

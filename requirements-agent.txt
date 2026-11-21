@@ -1,0 +1,8 @@
+# Single participant install for the workshop's supported Google Cloud path.
+# Decision 1 is intentionally excluded: its Decisions API currently requires
+# google-genai>=3.2, which conflicts with ADK 2.15's google-genai<3 requirement.
+# The BigQuery Agent Analytics plugin is included so Notebook 3 needs no later install.
+google-adk[bigquery-analytics]==2.15.0
+google-genai>=2.30.0,<3
+google-cloud-bigquery>=3.25.0,<4
+PyYAML>=6.0.2,<7

@@ -1,0 +1,41 @@
+{
+  "description": "Small labelled fixture for deterministic specialist-target planning. This tests the routing baseline, not live LLM delegation quality.",
+  "cases": [
+    {
+      "id": "M01",
+      "question": "Which products are below safety stock?",
+      "expected_route": "INVENTORY_RISK",
+      "expected_specialists": ["inventory_specialist"]
+    },
+    {
+      "id": "M02",
+      "question": "Which suppliers have the weakest on-time delivery rate?",
+      "expected_route": "SUPPLIER_RISK",
+      "expected_specialists": ["supplier_specialist"]
+    },
+    {
+      "id": "M03",
+      "question": "Which open fulfilment orders are overdue?",
+      "expected_route": "FULFILMENT_DELAY",
+      "expected_specialists": ["fulfilment_specialist"]
+    },
+    {
+      "id": "M04",
+      "question": "Which suppliers contribute to inventory shortages and overdue fulfilment orders?",
+      "expected_route": "CROSS_DOMAIN",
+      "expected_specialists": ["inventory_specialist", "supplier_specialist", "fulfilment_specialist"]
+    },
+    {
+      "id": "M05",
+      "question": "Compare supplier lead time with stockout exposure.",
+      "expected_route": "CROSS_DOMAIN",
+      "expected_specialists": ["inventory_specialist", "supplier_specialist"]
+    },
+    {
+      "id": "M06",
+      "question": "What is the value of delayed open orders and inventory value at risk?",
+      "expected_route": "CROSS_DOMAIN",
+      "expected_specialists": ["inventory_specialist", "fulfilment_specialist"]
+    }
+  ]
+}

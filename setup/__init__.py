@@ -1,0 +1,1 @@
+"""Shared Colab workshop setup."""

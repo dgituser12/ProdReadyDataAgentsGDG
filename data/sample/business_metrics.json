@@ -1,0 +1,132 @@
+{
+  "as_of_date": "2026-10-01",
+  "currency": "GBP",
+  "inventory": {
+    "snapshot_date": "2026-10-01",
+    "warehouse_id": "WH-ESSEX-01",
+    "product_count": 60,
+    "available_stock_units": 7212,
+    "products_below_safety_stock": 22,
+    "critical_products": 9,
+    "stockout_products": 1,
+    "shortage_units": 572,
+    "inventory_value_at_risk_gbp": 244708.79
+  },
+  "fulfillment": {
+    "snapshot_date": "2026-10-01",
+    "total_orders": 500,
+    "delivered_orders": 274,
+    "open_orders": 207,
+    "overdue_open_orders": 61,
+    "current_overdue_days_total": 699,
+    "delivered_late_orders": 186,
+    "on_time_delivery_rate": 0.3212,
+    "delayed_open_order_value_gbp": 3154361.7
+  },
+  "suppliers": [
+    {
+      "supplier_id": "SUP-001",
+      "supplier_name": "Northstar Components",
+      "supplier_risk_tier": "LOW",
+      "standard_lead_time_days": 24,
+      "active": true,
+      "total_orders": 49,
+      "delivered_orders": 27,
+      "on_time_deliveries": 8,
+      "late_deliveries": 19,
+      "on_time_delivery_rate": 0.2963,
+      "average_late_days": 6.63
+    },
+    {
+      "supplier_id": "SUP-002",
+      "supplier_name": "Apex Industrial",
+      "supplier_risk_tier": "MEDIUM",
+      "standard_lead_time_days": 19,
+      "active": true,
+      "total_orders": 82,
+      "delivered_orders": 47,
+      "on_time_deliveries": 15,
+      "late_deliveries": 32,
+      "on_time_delivery_rate": 0.3191,
+      "average_late_days": 5.5
+    },
+    {
+      "supplier_id": "SUP-003",
+      "supplier_name": "Pacific Circuitry",
+      "supplier_risk_tier": "HIGH",
+      "standard_lead_time_days": 11,
+      "active": true,
+      "total_orders": 29,
+      "delivered_orders": 17,
+      "on_time_deliveries": 6,
+      "late_deliveries": 11,
+      "on_time_delivery_rate": 0.3529,
+      "average_late_days": 8.36
+    },
+    {
+      "supplier_id": "SUP-004",
+      "supplier_name": "Meridian Materials",
+      "supplier_risk_tier": "MEDIUM",
+      "standard_lead_time_days": 23,
+      "active": true,
+      "total_orders": 74,
+      "delivered_orders": 35,
+      "on_time_deliveries": 9,
+      "late_deliveries": 26,
+      "on_time_delivery_rate": 0.2571,
+      "average_late_days": 4.08
+    },
+    {
+      "supplier_id": "SUP-005",
+      "supplier_name": "BlueRiver Logistics",
+      "supplier_risk_tier": "LOW",
+      "standard_lead_time_days": 27,
+      "active": true,
+      "total_orders": 65,
+      "delivered_orders": 38,
+      "on_time_deliveries": 16,
+      "late_deliveries": 22,
+      "on_time_delivery_rate": 0.4211,
+      "average_late_days": 4.09
+    },
+    {
+      "supplier_id": "SUP-006",
+      "supplier_name": "Summit Manufacturing",
+      "supplier_risk_tier": "HIGH",
+      "standard_lead_time_days": 15,
+      "active": true,
+      "total_orders": 66,
+      "delivered_orders": 37,
+      "on_time_deliveries": 9,
+      "late_deliveries": 28,
+      "on_time_delivery_rate": 0.2432,
+      "average_late_days": 5.0
+    },
+    {
+      "supplier_id": "SUP-007",
+      "supplier_name": "Orion Precision",
+      "supplier_risk_tier": "LOW",
+      "standard_lead_time_days": 20,
+      "active": true,
+      "total_orders": 37,
+      "delivered_orders": 23,
+      "on_time_deliveries": 11,
+      "late_deliveries": 12,
+      "on_time_delivery_rate": 0.4783,
+      "average_late_days": 5.33
+    },
+    {
+      "supplier_id": "SUP-008",
+      "supplier_name": "CedarWorks Supply",
+      "supplier_risk_tier": "MEDIUM",
+      "standard_lead_time_days": 8,
+      "active": true,
+      "total_orders": 98,
+      "delivered_orders": 50,
+      "on_time_deliveries": 14,
+      "late_deliveries": 36,
+      "on_time_delivery_rate": 0.28,
+      "average_late_days": 5.03
+    }
+  ]
+}

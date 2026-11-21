@@ -1,0 +1,9 @@
+supplier_id,supplier_name,country,supplier_risk_tier,standard_lead_time_days,active
+SUP-001,Northstar Components,United Kingdom,LOW,24,True
+SUP-002,Apex Industrial,Germany,MEDIUM,19,True
+SUP-003,Pacific Circuitry,Singapore,HIGH,11,True
+SUP-004,Meridian Materials,India,MEDIUM,23,True
+SUP-005,BlueRiver Logistics,Netherlands,LOW,27,True
+SUP-006,Summit Manufacturing,United States,HIGH,15,True
+SUP-007,Orion Precision,Japan,LOW,20,True
+SUP-008,CedarWorks Supply,Poland,MEDIUM,8,True

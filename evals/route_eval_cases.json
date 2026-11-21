@@ -1,0 +1,85 @@
+{
+  "description": "Small labelled routing set for the synthetic Essex supply-chain workshop. Extend with participant-generated questions and review labels before tuning thresholds.",
+  "cases": [
+    {
+      "id": "R01",
+      "question": "Which products are below safety stock?",
+      "expected_route": "INVENTORY_RISK"
+    },
+    {
+      "id": "R02",
+      "question": "Show me stockout products and inventory value at risk.",
+      "expected_route": "INVENTORY_RISK"
+    },
+    {
+      "id": "R03",
+      "question": "How many units are available after reservations?",
+      "expected_route": "INVENTORY_RISK"
+    },
+    {
+      "id": "R04",
+      "question": "Which suppliers have the weakest on-time delivery rate?",
+      "expected_route": "SUPPLIER_RISK"
+    },
+    {
+      "id": "R05",
+      "question": "Compare supplier profile risk tiers with late delivery performance.",
+      "expected_route": "SUPPLIER_RISK"
+    },
+    {
+      "id": "R06",
+      "question": "What is the standard supplier lead time?",
+      "expected_route": "SUPPLIER_RISK"
+    },
+    {
+      "id": "R07",
+      "question": "Which open orders are overdue?",
+      "expected_route": "FULFILMENT_DELAY"
+    },
+    {
+      "id": "R08",
+      "question": "What is the value of delayed open orders?",
+      "expected_route": "FULFILMENT_DELAY"
+    },
+    {
+      "id": "R09",
+      "question": "Show orders with the oldest promised delivery dates.",
+      "expected_route": "FULFILMENT_DELAY"
+    },
+    {
+      "id": "R10",
+      "question": "What is the overall inventory and fulfilment position?",
+      "expected_route": "CROSS_DOMAIN"
+    },
+    {
+      "id": "R11",
+      "question": "Compare supplier inventory and fulfilment delays.",
+      "expected_route": "CROSS_DOMAIN"
+    },
+    {
+      "id": "R12",
+      "question": "What does inventory value at risk mean?",
+      "expected_route": "INVENTORY_RISK"
+    },
+    {
+      "id": "R13",
+      "question": "Explain the difference between profile risk and observed performance.",
+      "expected_route": "GENERAL_QUESTION"
+    },
+    {
+      "id": "R14",
+      "question": "What is this workshop about?",
+      "expected_route": "GENERAL_QUESTION"
+    },
+    {
+      "id": "R15",
+      "question": "Can you help me with this?",
+      "expected_route": "GENERAL_QUESTION"
+    },
+    {
+      "id": "R16",
+      "question": "Which suppliers contribute to inventory shortages and overdue fulfilment orders?",
+      "expected_route": "CROSS_DOMAIN"
+    }
+  ]
+}

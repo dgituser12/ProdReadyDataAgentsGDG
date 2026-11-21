@@ -1,0 +1,20 @@
+# GDG Essex workshop participant configuration.
+# Edit the values in the first setup cell of the notebook, or edit this file in Colab.
+# This file contains identifiers only. Never add API keys or credentials.
+
+google_cloud:
+  project_id: "REPLACE_WITH_YOUR_GCP_PROJECT_ID"
+  bigquery_location: "US"
+  dataset_id: "essex_workshop"
+
+vertex_ai:
+  model_id: "gemini-3.8-flash"
+  location: "global"
+
+source_data:
+  project_id: "REPLACE_WITH_WORKSHOP_SOURCE_PROJECT_ID"
+  dataset_id: "REPLACE_WITH_WORKSHOP_SOURCE_DATASET_ID"
+
+repository:
+  url: "https://github.com/REPLACE_WITH_GITHUB_OWNER/enterprise-data-agents-gdg-essex.git"
+  branch_or_tag: "main"
